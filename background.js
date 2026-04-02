@@ -1,6 +1,6 @@
 'use strict';
 
-const DEFAULT_COLORS = { bg: '#000000', accent: '#ffffff' };
+const DEFAULT_COLORS = { bg: '#000000', accent: '#ffab00' };
 let currentColors = { ...DEFAULT_COLORS };
 
 function drawUTCIcon(size) {
@@ -32,24 +32,18 @@ function setUTCIcon() {
 
 let lastMinute = -1;
 
-function getUTCTime() {
-  const now = new Date();
-  const h = String(now.getUTCHours());
-  const m = String(now.getUTCMinutes()).padStart(2, '0');
-  return { h, m, minute: now.getUTCMinutes() };
-}
-
 function updateBadge() {
-  const { h, m, minute } = getUTCTime();
+  const now = new Date();
+  const minute = now.getUTCMinutes();
 
   if (minute === lastMinute) return;
   lastMinute = minute;
 
-  chrome.action.setBadgeText({ text: `${h}:${m}` });
+  const h = String(now.getUTCHours());
+  const m = String(minute).padStart(2, '0');
 
-  const now = new Date();
-  const iso = now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
-  chrome.action.setTitle({ title: iso });
+  chrome.action.setBadgeText({ text: `${h}:${m}` });
+  chrome.action.setTitle({ title: now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC' });
 }
 
 function applyColors() {

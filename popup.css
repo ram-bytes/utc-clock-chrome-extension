@@ -7,13 +7,105 @@
 body {
   background: #111111;
   padding: 5px;
-  width: 109px;
+  width: 185px;
+}
+
+.epoch-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+#epoch {
+  flex: 1;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  color: #aaaaaa;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 3px 4px;
+  outline: none;
+  min-width: 0;
+}
+
+#copy {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaaaaa;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+#copy:hover {
+  color: #ffffff;
+  background: #333333;
+}
+
+.convert-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+#convert {
+  flex: 7;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  color: #aaaaaa;
+  font-size: 11px;
+  padding: 3px 0;
+  cursor: pointer;
+}
+
+#convert:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+#reset {
+  flex: 3;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  color: #aaaaaa;
+  font-size: 11px;
+  padding: 3px 0;
+  cursor: pointer;
+}
+
+#reset:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
+#utc-time {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: bold;
+  color: #cccccc;
+  margin-bottom: 2px;
+}
+
+#unit-label {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: bold;
+  color: #777777;
+  margin-bottom: 24px;
 }
 
 #grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
+  justify-items: center;
 }
 
 .cell {
