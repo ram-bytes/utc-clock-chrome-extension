@@ -1,16 +1,17 @@
 'use strict';
 
+const DEFAULT_COLORS = { bg: '#000000', accent: '#ffffff' };
+let currentColors = { ...DEFAULT_COLORS };
+
 function drawUTCIcon(size) {
   const canvas = new OffscreenCanvas(size, size);
   const ctx = canvas.getContext('2d');
 
-  // Dark background
-  ctx.fillStyle = '#1a1a2e';
+  ctx.fillStyle = currentColors.bg;
   ctx.fillRect(0, 0, size, size);
 
-  // "UTC" centered in green
   const fontSize = Math.round(size * 0.55);
-  ctx.fillStyle = '#00ff00';
+  ctx.fillStyle = currentColors.accent;
   ctx.font = `bold ${fontSize}px Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -33,7 +34,7 @@ let lastMinute = -1;
 
 function getUTCTime() {
   const now = new Date();
-  const h = String(now.getUTCHours()).padStart(2, '0');
+  const h = String(now.getUTCHours());
   const m = String(now.getUTCMinutes()).padStart(2, '0');
   return { h, m, minute: now.getUTCMinutes() };
 }
@@ -44,13 +45,19 @@ function updateBadge() {
   if (minute === lastMinute) return;
   lastMinute = minute;
 
-  const text = `${h}:${m}`;
-
-  chrome.action.setBadgeText({ text });
+  chrome.action.setBadgeText({ text: `${h}:${m}` });
 
   const now = new Date();
   const iso = now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
   chrome.action.setTitle({ title: iso });
+}
+
+function applyColors() {
+  chrome.action.setBadgeBackgroundColor({ color: currentColors.accent });
+  chrome.action.setBadgeTextColor({ color: currentColors.bg });
+  setUTCIcon();
+  lastMinute = -1;
+  updateBadge();
 }
 
 function scheduleNextMinute() {
@@ -66,12 +73,19 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'tick') updateBadge();
 });
 
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.colorPair) {
+    currentColors = changes.colorPair.newValue;
+    applyColors();
+  }
+});
+
 function initDisplay() {
-  chrome.action.setBadgeTextColor({ color: '#000000' });
-  chrome.action.setBadgeBackgroundColor({ color: '#00ff00' });
-  setUTCIcon();
-  updateBadge();
-  scheduleNextMinute();
+  chrome.storage.local.get('colorPair', (result) => {
+    if (result.colorPair) currentColors = result.colorPair;
+    applyColors();
+    scheduleNextMinute();
+  });
 }
 
 chrome.runtime.onInstalled.addListener(initDisplay);
@@ -79,5 +93,8 @@ chrome.runtime.onStartup.addListener(initDisplay);
 
 // On alarm wakeup, neither onInstalled nor onStartup fire — run icon+badge directly.
 // Do NOT call scheduleNextMinute here; the alarm persists across SW restarts.
-setUTCIcon();
-updateBadge();
+chrome.storage.local.get('colorPair', (result) => {
+  if (result.colorPair) currentColors = result.colorPair;
+  setUTCIcon();
+  updateBadge();
+});
