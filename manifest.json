@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "UTC Clock",
+  "version": "2.0.0",
+  "description": "Displays the current UTC time in the toolbar badge",
+  "action": {
+"default_title": "UTC Clock"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["alarms"]
+}
