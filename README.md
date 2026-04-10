@@ -1,4 +1,4 @@
-# UTC Clock
+# UTC Clock & Epoch Converter
 
 A minimal Chrome extension that displays the current UTC time in the toolbar badge, updated every minute.
 

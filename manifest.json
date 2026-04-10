@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "UTC Clock",
-  "version": "2.0.0",
-  "description": "Displays the current UTC time in the toolbar badge",
+  "name": "UTC Clock & Epoch Converter",
+  "version": "1.0.0",
+  "description": "Displays the current UTC time in the toolbar badge and converts Unix timestamps to human-readable UTC dates.",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "UTC Clock"
+    "default_title": "UTC Clock & Epoch Converter"
   },
   "background": {
     "service_worker": "background.js"
