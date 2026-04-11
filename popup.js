@@ -14,8 +14,7 @@ function detectAndConvert(valStr) {
   return            { unit: 'nanoseconds',   ms: Number(valStr.slice(0, -6)) };
 }
 
-let paused      = false;
-let frozen      = false;
+let paused       = false;
 let valueOnFocus = '';
 
 function updateTime() {
@@ -32,7 +31,6 @@ setInterval(updateTime, 1000);
 epochInput.addEventListener('focus', () => { paused = true; valueOnFocus = epochInput.value; });
 epochInput.addEventListener('blur', () => {
   if (epochInput.value === valueOnFocus) {
-    frozen = false;
     paused = false;
     updateTime();
   }
@@ -51,8 +49,6 @@ document.getElementById('copy').addEventListener('click', () => {
   navigator.clipboard.writeText(valueToCopy);
 });
 
-// mousedown fires before blur — only freeze if input is currently focused/paused
-document.getElementById('convert').addEventListener('mousedown', () => { if (paused) frozen = true; });
 document.getElementById('convert').addEventListener('click', () => {
   const valStr = epochInput.value;
   if (!/^\d+$/.test(valStr)) return;
@@ -69,7 +65,6 @@ document.getElementById('convert').addEventListener('click', () => {
 });
 
 document.getElementById('reset').addEventListener('click', () => {
-  frozen = false;
   paused = false;
   epochInput.blur();
   updateTime();

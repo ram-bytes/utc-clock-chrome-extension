@@ -20,14 +20,20 @@ function drawUTCIcon(size) {
   return ctx.getImageData(0, 0, size, size);
 }
 
+let iconCache = null;
+let iconCacheKey = null;
+
 function setUTCIcon() {
-  chrome.action.setIcon({
-    imageData: {
+  const key = `${currentColors.bg}|${currentColors.accent}`;
+  if (iconCacheKey !== key) {
+    iconCache = {
       16:  drawUTCIcon(16),
       48:  drawUTCIcon(48),
       128: drawUTCIcon(128),
-    }
-  });
+    };
+    iconCacheKey = key;
+  }
+  chrome.action.setIcon({ imageData: iconCache });
 }
 
 let lastMinute = -1;
@@ -74,21 +80,25 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
-function initDisplay() {
+// initDone prevents double-init when onInstalled/onStartup fires on the same
+// SW activation as the module-level call below.
+let initDone = false;
+
+function init() {
+  if (initDone) return;
+  initDone = true;
   chrome.storage.local.get('colorPair', (result) => {
     if (result.colorPair) currentColors = result.colorPair;
     applyColors();
-    scheduleNextMinute();
+    chrome.alarms.get('tick', (alarm) => {
+      if (!alarm) scheduleNextMinute();
+    });
   });
 }
 
-chrome.runtime.onInstalled.addListener(initDisplay);
-chrome.runtime.onStartup.addListener(initDisplay);
-
-// On alarm wakeup, neither onInstalled nor onStartup fire — run icon+badge directly.
-// Do NOT call scheduleNextMinute here; the alarm persists across SW restarts.
-chrome.storage.local.get('colorPair', (result) => {
-  if (result.colorPair) currentColors = result.colorPair;
-  setUTCIcon();
-  updateBadge();
-});
+// onInstalled/onStartup registration tells Chrome to start this SW on browser
+// launch and extension install — without them the icon stays blank until the
+// first alarm fires.
+chrome.runtime.onInstalled.addListener(init);
+chrome.runtime.onStartup.addListener(init);
+init(); // also covers alarm wakeup (neither event fires in that case)
