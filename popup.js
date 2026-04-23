@@ -4,15 +4,12 @@
 
 const epochInput = document.getElementById('epoch');
 const utcTimeEl  = document.getElementById('utc-time');
+const tzTimeEl   = document.getElementById('tz-time');
 const unitLabel  = document.getElementById('unit-label');
-
-function detectAndConvert(valStr) {
-  const len = valStr.length;
-  if (len <= 10) return { unit: 'seconds',      ms: Number(valStr) * 1000 };
-  if (len <= 13) return { unit: 'milliseconds',  ms: Number(valStr) };
-  if (len <= 16) return { unit: 'microseconds',  ms: Number(valStr.slice(0, -3)) };
-  return            { unit: 'nanoseconds',   ms: Number(valStr.slice(0, -6)) };
-}
+const tzSelect   = document.getElementById('tz-select');
+const copyBtn    = document.getElementById('copy');
+const convertBtn = document.getElementById('convert');
+const resetBtn   = document.getElementById('reset');
 
 let paused       = false;
 let valueOnFocus = '';
@@ -20,9 +17,12 @@ let valueOnFocus = '';
 function updateTime() {
   if (paused) return;
   const now = new Date();
-  epochInput.value       = Math.floor(now.getTime() / 1000);
-  utcTimeEl.textContent  = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-  unitLabel.textContent  = 'Assumed: seconds';
+  epochInput.value      = Math.floor(now.getTime() / 1000);
+  utcTimeEl.textContent = formatUTC(now);
+  unitLabel.textContent = 'Assumed: seconds';
+  if (tzTimeEl.textContent) {
+    tzTimeEl.textContent = formatInZone(now, tzSelect.value, tzSelect.selectedOptions[0].text);
+  }
 }
 
 updateTime();
@@ -44,13 +44,15 @@ epochInput.addEventListener('input', () => {
 
 // Capture value on mousedown so blur can't change it before click fires
 let valueToCopy = '';
-document.getElementById('copy').addEventListener('mousedown', () => { valueToCopy = epochInput.value; });
-document.getElementById('copy').addEventListener('click', () => {
+copyBtn.addEventListener('mousedown', () => { valueToCopy = epochInput.value; });
+copyBtn.addEventListener('click', () => {
   navigator.clipboard.writeText(valueToCopy);
 });
 
-document.getElementById('convert').addEventListener('click', () => {
-  const valStr = epochInput.value;
+let valueToConvert = '';
+convertBtn.addEventListener('mousedown', () => { valueToConvert = epochInput.value; });
+convertBtn.addEventListener('click', () => {
+  const valStr = valueToConvert;
   if (!/^\d+$/.test(valStr)) return;
 
   const { unit, ms } = detectAndConvert(valStr);
@@ -59,13 +61,19 @@ document.getElementById('convert').addEventListener('click', () => {
     utcTimeEl.textContent = 'Invalid timestamp';
     unitLabel.textContent = '';
   } else {
-    utcTimeEl.textContent = date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    const abbr = tzSelect.selectedOptions[0].text;
+    const ianaZone = tzSelect.value;
+    utcTimeEl.textContent = formatUTC(date);
+    tzTimeEl.textContent  = formatInZone(date, ianaZone, abbr);
     unitLabel.textContent = `Assumed: ${unit}`;
+    chrome.storage.local.set({ tzActive: true });
   }
 });
 
-document.getElementById('reset').addEventListener('click', () => {
+resetBtn.addEventListener('click', () => {
   paused = false;
+  tzTimeEl.textContent = '';
+  chrome.storage.local.remove('tzActive');
   epochInput.blur();
   updateTime();
 });
@@ -135,11 +143,24 @@ function initColorPicker(saved) {
   grid.appendChild(customCell);
 }
 
-chrome.storage.local.get('colorPair', (result) => {
+chrome.storage.local.get(['colorPair', 'selectedTz', 'tzActive'], (result) => {
   let saved = result.colorPair;
   if (!saved) {
     saved = { bg: FIXED_BG, accent: '#ffab00' };
     chrome.storage.local.set({ colorPair: saved });
   }
   initColorPicker(saved);
+
+  if (result.selectedTz) {
+    const match = [...tzSelect.options].findIndex(o => o.text === result.selectedTz);
+    if (match !== -1) tzSelect.selectedIndex = match;
+  }
+
+  if (result.tzActive) {
+    tzTimeEl.textContent = formatInZone(new Date(), tzSelect.value, tzSelect.selectedOptions[0].text);
+  }
+});
+
+tzSelect.addEventListener('change', () => {
+  chrome.storage.local.set({ selectedTz: tzSelect.selectedOptions[0].text });
 });

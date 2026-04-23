@@ -1,0 +1,8 @@
+{
+  "name": "utc-clock-chrome-extension",
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "git config core.hooksPath hooks",
+    "test": "node --test test/converter.test.js"
+  }
+}

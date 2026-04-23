@@ -7,7 +7,7 @@
 body {
   background: #111111;
   padding: 5px;
-  width: 185px;
+  width: 230px;
 }
 
 .epoch-row {
@@ -49,19 +49,47 @@ body {
 
 .convert-row {
   display: flex;
+  align-items: center;
   gap: 4px;
   margin-bottom: 4px;
 }
 
+.convert-label {
+  font-family: monospace;
+  font-size: 10px;
+  color: #777777;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#tz-select {
+  flex: 3;
+  min-width: 0;
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  color: #aaaaaa;
+  font-family: monospace;
+  font-size: 10px;
+  padding: 3px 2px;
+  cursor: pointer;
+  outline: none;
+}
+
+#tz-select:hover {
+  background: #333333;
+  color: #ffffff;
+}
+
 #convert {
-  flex: 7;
   background: #222222;
   border: 1px solid #333333;
   border-radius: 3px;
   color: #aaaaaa;
   font-size: 11px;
-  padding: 3px 0;
+  padding: 3px 6px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 #convert:hover {
@@ -70,14 +98,14 @@ body {
 }
 
 #reset {
-  flex: 3;
   background: #222222;
   border: 1px solid #333333;
   border-radius: 3px;
   color: #aaaaaa;
   font-size: 11px;
-  padding: 3px 0;
+  padding: 3px 5px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 #reset:hover {
@@ -85,7 +113,8 @@ body {
   color: #ffffff;
 }
 
-#utc-time {
+#utc-time,
+#tz-time {
   font-family: monospace;
   font-size: 13px;
   font-weight: bold;

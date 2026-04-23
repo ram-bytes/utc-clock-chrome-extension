@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "UTC Clock & Epoch Converter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Displays the current UTC time in the toolbar badge and converts Unix timestamps to human-readable UTC dates.",
   "action": {
     "default_popup": "popup.html",

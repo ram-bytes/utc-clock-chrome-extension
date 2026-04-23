@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+NODE=$(command -v node 2>/dev/null || echo "/opt/homebrew/bin/node")
+
+if [ ! -x "$NODE" ]; then
+  echo "pre-commit: node not found, skipping tests"
+  exit 0
+fi
+
+echo "Running tests..."
+"$NODE" --test test/converter.test.js
