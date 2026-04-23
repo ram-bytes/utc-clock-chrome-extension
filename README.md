@@ -1,5 +1,7 @@
 # UTC Clock & Epoch Converter
 
+**Available on the Chrome Web Store:** [UTC Clock & Epoch Converter](https://chromewebstore.google.com/detail/utc-clock-epoch-converter/jooaafohejjogngjddkfnjphegfngbla)
+
 A minimal Chrome extension that displays the current UTC time in the toolbar badge, updated every minute.
 
 ## Features
