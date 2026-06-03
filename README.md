@@ -12,3 +12,11 @@ A minimal Chrome extension that displays the current UTC time in the toolbar bad
 - 💾 All preferences (color, selected timezone, converter state) saved and restored across sessions
 
 ![Popup](screenshots/popup.png)
+
+## Development
+
+Run `npm install` after cloning to wire up the git hooks. Tests run automatically before each commit via a pre-commit hook (`hooks/pre-commit`) — the commit is blocked if any test fails. To run tests manually:
+
+```
+npm test
+```
