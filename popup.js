@@ -164,3 +164,12 @@ chrome.storage.local.get(['colorPair', 'selectedTz', 'tzActive'], (result) => {
 tzSelect.addEventListener('change', () => {
   chrome.storage.local.set({ selectedTz: tzSelect.selectedOptions[0].text });
 });
+
+// ── THEME TOGGLE ─────────────────────────────────────────────────────────────
+
+const themeToggle = document.getElementById('theme-toggle');
+const grid        = document.getElementById('grid');
+themeToggle.addEventListener('click', () => {
+  const collapsed = grid.classList.toggle('collapsed');
+  themeToggle.classList.toggle('expanded', !collapsed);
+});

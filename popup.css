@@ -130,11 +130,44 @@ body {
   margin-bottom: 24px;
 }
 
+#theme-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #777777;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+#theme-toggle:hover {
+  color: #ffffff;
+}
+
+.theme-arrow {
+  display: inline-block;
+  transition: transform 0.15s;
+}
+
+#theme-toggle.expanded .theme-arrow {
+  transform: rotate(90deg);
+}
+
 #grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 5px;
   justify-items: center;
+}
+
+#grid.collapsed {
+  display: none;
 }
 
 .cell {
