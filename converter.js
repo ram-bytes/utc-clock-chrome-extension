@@ -9,7 +9,8 @@ function detectAndConvert(valStr) {
 }
 
 function formatUTC(date) {
-  return `UTC: ${date.toISOString().replace('T', ' ').substring(0, 19)}`;
+  const wd = date.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short' });
+  return `UTC: ${date.toISOString().replace('T', ' ').substring(0, 19)} (${wd})`;
 }
 
 function formatInZone(date, ianaZone, abbr) {
@@ -19,7 +20,9 @@ function formatInZone(date, ianaZone, abbr) {
     hour: '2-digit', minute: '2-digit', second: '2-digit',
     hourCycle: 'h23'
   }).replace(', ', ' ');
-  return `${abbr}: ${formatted}`;
+  // Weekday from the zone itself, so it follows that zone's calendar day.
+  const wd = date.toLocaleDateString('en-US', { timeZone: ianaZone, weekday: 'short' });
+  return `${abbr}: ${formatted} (${wd})`;
 }
 
 if (typeof module !== 'undefined') module.exports = { detectAndConvert, formatUTC, formatInZone };

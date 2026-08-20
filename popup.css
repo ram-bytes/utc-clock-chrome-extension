@@ -7,7 +7,7 @@
 body {
   background: #111111;
   padding: 5px;
-  width: 230px;
+  width: 280px;
 }
 
 .epoch-row {
@@ -47,11 +47,34 @@ body {
   background: #333333;
 }
 
-.convert-row {
+.convert-row,
+.zone-row {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-bottom: 4px;
+}
+
+.convert-row {
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+#add-zone {
+  background: #222222;
+  border: 1px solid #333333;
+  border-radius: 3px;
+  color: #aaaaaa;
+  font-size: 11px;
+  padding: 3px 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+#add-zone:hover {
+  background: #333333;
+  color: #ffffff;
 }
 
 .convert-label {
@@ -114,12 +137,39 @@ body {
 }
 
 #utc-time,
-#tz-time {
+.wc-time {
   font-family: monospace;
   font-size: 13px;
   font-weight: bold;
   color: #cccccc;
+  white-space: nowrap;
+}
+
+#utc-time {
   margin-bottom: 2px;
+}
+
+.wc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.wc-remove {
+  background: none;
+  border: none;
+  color: #666666;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.wc-remove:hover {
+  color: #ffffff;
 }
 
 #unit-label {
@@ -127,7 +177,8 @@ body {
   font-size: 10px;
   font-weight: bold;
   color: #777777;
-  margin-bottom: 24px;
+  margin-top: 2px;
+  margin-bottom: 6px;
 }
 
 #theme-toggle {

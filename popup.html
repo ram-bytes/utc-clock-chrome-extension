@@ -14,8 +14,13 @@
       </svg>
     </button>
   </div>
+  <div id="unit-label"></div>
   <div class="convert-row">
-    <span class="convert-label">Convert to:</span>
+    <button id="convert">See date time</button>
+    <button id="reset" title="Reset">Reset epoch</button>
+  </div>
+  <div class="zone-row">
+    <span class="convert-label">Zone:</span>
     <select id="tz-select">
       <option value="Australia/Sydney">AEST</option>
       <option value="Europe/London">BST</option>
@@ -36,12 +41,10 @@
       <option value="America/Los_Angeles" selected>PST</option>
       <option value="Asia/Singapore">SGT</option>
     </select>
-    <button id="convert">Go</button>
-    <button id="reset" title="Reset">↺</button>
+    <button id="add-zone" title="Add zone to clock">+ Clock</button>
   </div>
-  <div id="unit-label"></div>
   <div id="utc-time"></div>
-  <div id="tz-time"></div>
+  <div id="world-clock"></div>
   <button id="theme-toggle" type="button">
     Theme <span class="theme-arrow">▸</span>
   </button>

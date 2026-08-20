@@ -10,31 +10,31 @@ const UTC_DATE = new Date('2024-01-15T12:00:00.000Z');
 // ── formatUTC ─────────────────────────────────────────────────────────────────
 
 test('formatUTC – formats date as UTC: YYYY-MM-DD HH:MM:SS', () => {
-  assert.equal(formatUTC(UTC_DATE), 'UTC: 2024-01-15 12:00:00');
+  assert.equal(formatUTC(UTC_DATE), 'UTC: 2024-01-15 12:00:00 (Mon)');
 });
 
 // ── formatInZone ──────────────────────────────────────────────────────────────
 
 const ZONE_CASES = [
   // [abbr, ianaZone, expected, note]
-  ['AEST', 'Australia/Sydney',    'AEST: 2024-01-15 23:00:00', 'UTC+11 in Jan (AEDT)'],
-  ['BST',  'Europe/London',       'BST: 2024-01-15 12:00:00',  'UTC+0 in Jan'],
-  ['CDT',  'America/Chicago',     'CDT: 2024-01-15 06:00:00',  'UTC-6 in Jan (CST)'],
-  ['CEST', 'Europe/Paris',        'CEST: 2024-01-15 13:00:00', 'UTC+1 in Jan (CET)'],
-  ['CET',  'Europe/Paris',        'CET: 2024-01-15 13:00:00',  'UTC+1 in Jan'],
-  ['China ST', 'Asia/Shanghai',   'China ST: 2024-01-15 20:00:00', 'UTC+8'],
-  ['CST',  'America/Chicago',     'CST: 2024-01-15 06:00:00',  'UTC-6 in Jan'],
-  ['EDT',  'America/New_York',    'EDT: 2024-01-15 07:00:00',  'UTC-5 in Jan (EST)'],
-  ['EST',  'America/New_York',    'EST: 2024-01-15 07:00:00',  'UTC-5 in Jan'],
-  ['IST',  'Asia/Kolkata',        'IST: 2024-01-15 17:30:00',  'UTC+5:30'],
-  ['JST',  'Asia/Tokyo',          'JST: 2024-01-15 21:00:00',  'UTC+9'],
-  ['KST',  'Asia/Seoul',          'KST: 2024-01-15 21:00:00',  'UTC+9'],
-  ['MDT',  'America/Denver',      'MDT: 2024-01-15 05:00:00',  'UTC-7 in Jan (MST)'],
-  ['MSK',  'Europe/Moscow',       'MSK: 2024-01-15 15:00:00',  'UTC+3'],
-  ['MST',  'America/Denver',      'MST: 2024-01-15 05:00:00',  'UTC-7 in Jan'],
-  ['PDT',  'America/Los_Angeles', 'PDT: 2024-01-15 04:00:00',  'UTC-8 in Jan (PST)'],
-  ['PST',  'America/Los_Angeles', 'PST: 2024-01-15 04:00:00',  'UTC-8 in Jan'],
-  ['SGT',  'Asia/Singapore',      'SGT: 2024-01-15 20:00:00',  'UTC+8'],
+  ['AEST', 'Australia/Sydney',    'AEST: 2024-01-15 23:00:00 (Mon)', 'UTC+11 in Jan (AEDT)'],
+  ['BST',  'Europe/London',       'BST: 2024-01-15 12:00:00 (Mon)',  'UTC+0 in Jan'],
+  ['CDT',  'America/Chicago',     'CDT: 2024-01-15 06:00:00 (Mon)',  'UTC-6 in Jan (CST)'],
+  ['CEST', 'Europe/Paris',        'CEST: 2024-01-15 13:00:00 (Mon)', 'UTC+1 in Jan (CET)'],
+  ['CET',  'Europe/Paris',        'CET: 2024-01-15 13:00:00 (Mon)',  'UTC+1 in Jan'],
+  ['China ST', 'Asia/Shanghai',   'China ST: 2024-01-15 20:00:00 (Mon)', 'UTC+8'],
+  ['CST',  'America/Chicago',     'CST: 2024-01-15 06:00:00 (Mon)',  'UTC-6 in Jan'],
+  ['EDT',  'America/New_York',    'EDT: 2024-01-15 07:00:00 (Mon)',  'UTC-5 in Jan (EST)'],
+  ['EST',  'America/New_York',    'EST: 2024-01-15 07:00:00 (Mon)',  'UTC-5 in Jan'],
+  ['IST',  'Asia/Kolkata',        'IST: 2024-01-15 17:30:00 (Mon)',  'UTC+5:30'],
+  ['JST',  'Asia/Tokyo',          'JST: 2024-01-15 21:00:00 (Mon)',  'UTC+9'],
+  ['KST',  'Asia/Seoul',          'KST: 2024-01-15 21:00:00 (Mon)',  'UTC+9'],
+  ['MDT',  'America/Denver',      'MDT: 2024-01-15 05:00:00 (Mon)',  'UTC-7 in Jan (MST)'],
+  ['MSK',  'Europe/Moscow',       'MSK: 2024-01-15 15:00:00 (Mon)',  'UTC+3'],
+  ['MST',  'America/Denver',      'MST: 2024-01-15 05:00:00 (Mon)',  'UTC-7 in Jan'],
+  ['PDT',  'America/Los_Angeles', 'PDT: 2024-01-15 04:00:00 (Mon)',  'UTC-8 in Jan (PST)'],
+  ['PST',  'America/Los_Angeles', 'PST: 2024-01-15 04:00:00 (Mon)',  'UTC-8 in Jan'],
+  ['SGT',  'Asia/Singapore',      'SGT: 2024-01-15 20:00:00 (Mon)',  'UTC+8'],
 ];
 
 for (const [abbr, zone, expected, note] of ZONE_CASES) {
@@ -47,12 +47,26 @@ for (const [abbr, zone, expected, note] of ZONE_CASES) {
 
 test('JST midnight – 2024-01-14T15:00:00Z is 2024-01-15 00:00:00 in JST', () => {
   const midnight = new Date('2024-01-14T15:00:00.000Z'); // UTC+9 → exactly midnight JST
-  assert.equal(formatInZone(midnight, 'Asia/Tokyo', 'JST'), 'JST: 2024-01-15 00:00:00');
+  assert.equal(formatInZone(midnight, 'Asia/Tokyo', 'JST'), 'JST: 2024-01-15 00:00:00 (Mon)');
 });
 
 test('PST midnight – 2024-01-15T08:00:00Z is 2024-01-15 00:00:00 in PST', () => {
   const midnight = new Date('2024-01-15T08:00:00.000Z'); // UTC-8 → exactly midnight PST
-  assert.equal(formatInZone(midnight, 'America/Los_Angeles', 'PST'), 'PST: 2024-01-15 00:00:00');
+  assert.equal(formatInZone(midnight, 'America/Los_Angeles', 'PST'), 'PST: 2024-01-15 00:00:00 (Mon)');
+});
+
+// ── weekday follows the zone's own calendar day ─────────────────────────────
+
+test('weekday is per-zone – 2024-01-15T20:00:00Z is still Mon in UTC but Tue in JST', () => {
+  const late = new Date('2024-01-15T20:00:00.000Z'); // Mon 20:00 UTC = Tue 05:00 JST
+  assert.equal(formatUTC(late), 'UTC: 2024-01-15 20:00:00 (Mon)');
+  assert.equal(formatInZone(late, 'Asia/Tokyo', 'JST'), 'JST: 2024-01-16 05:00:00 (Tue)');
+});
+
+test('weekday is per-zone – 2024-01-15T03:00:00Z is Mon in UTC but still Sun in PST', () => {
+  const early = new Date('2024-01-15T03:00:00.000Z'); // Mon 03:00 UTC = Sun 19:00 PST
+  assert.equal(formatUTC(early), 'UTC: 2024-01-15 03:00:00 (Mon)');
+  assert.equal(formatInZone(early, 'America/Los_Angeles', 'PST'), 'PST: 2024-01-14 19:00:00 (Sun)');
 });
 
 // ── detectAndConvert ──────────────────────────────────────────────────────────

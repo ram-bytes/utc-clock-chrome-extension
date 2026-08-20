@@ -2,30 +2,78 @@
 
 // ── EPOCH CONVERTER ──────────────────────────────────────────────────────────
 
-const epochInput = document.getElementById('epoch');
-const utcTimeEl  = document.getElementById('utc-time');
-const tzTimeEl   = document.getElementById('tz-time');
-const unitLabel  = document.getElementById('unit-label');
-const tzSelect   = document.getElementById('tz-select');
-const copyBtn    = document.getElementById('copy');
-const convertBtn = document.getElementById('convert');
-const resetBtn   = document.getElementById('reset');
+const epochInput   = document.getElementById('epoch');
+const utcTimeEl    = document.getElementById('utc-time');
+const worldClockEl = document.getElementById('world-clock');
+const unitLabel    = document.getElementById('unit-label');
+const tzSelect     = document.getElementById('tz-select');
+const copyBtn      = document.getElementById('copy');
+const convertBtn   = document.getElementById('convert');
+const resetBtn     = document.getElementById('reset');
+const addZoneBtn   = document.getElementById('add-zone');
 
 let paused       = false;
 let valueOnFocus = '';
+
+// Favorite zones shown in the world clock: [{ abbr, iana }]
+let zones = [];
+
+function renderRows() {
+  worldClockEl.innerHTML = '';
+  zones.forEach((zone, i) => {
+    const row = document.createElement('div');
+    row.className = 'wc-row';
+
+    const time = document.createElement('span');
+    time.className = 'wc-time';
+    row.appendChild(time);
+
+    const remove = document.createElement('button');
+    remove.className = 'wc-remove';
+    remove.textContent = '×';
+    remove.title = 'Remove';
+    remove.addEventListener('click', () => {
+      zones.splice(i, 1);
+      saveZones();
+      renderRows();
+      renderClock(shownDate());
+    });
+    row.appendChild(remove);
+
+    worldClockEl.appendChild(row);
+  });
+}
+
+// Fill UTC + every zone row with the given instant.
+function renderClock(date) {
+  utcTimeEl.textContent = formatUTC(date);
+  const rows = worldClockEl.querySelectorAll('.wc-time');
+  zones.forEach((zone, i) => {
+    if (rows[i]) rows[i].textContent = formatInZone(date, zone.iana, zone.abbr);
+  });
+}
+
+// The instant currently displayed: paused → the epoch in the field, else now.
+function shownDate() {
+  if (paused) {
+    const val = epochInput.value;
+    if (/^\d+$/.test(val)) return new Date(detectAndConvert(val).ms);
+  }
+  return new Date();
+}
+
+function saveZones() {
+  chrome.storage.local.set({ worldZones: zones });
+}
 
 function updateTime() {
   if (paused) return;
   const now = new Date();
   epochInput.value      = Math.floor(now.getTime() / 1000);
-  utcTimeEl.textContent = formatUTC(now);
   unitLabel.textContent = 'Assumed: seconds';
-  if (tzTimeEl.textContent) {
-    tzTimeEl.textContent = formatInZone(now, tzSelect.value, tzSelect.selectedOptions[0].text);
-  }
+  renderClock(now);
 }
 
-updateTime();
 setInterval(updateTime, 1000);
 
 epochInput.addEventListener('focus', () => { paused = true; valueOnFocus = epochInput.value; });
@@ -61,21 +109,27 @@ convertBtn.addEventListener('click', () => {
     utcTimeEl.textContent = 'Invalid timestamp';
     unitLabel.textContent = '';
   } else {
-    const abbr = tzSelect.selectedOptions[0].text;
-    const ianaZone = tzSelect.value;
-    utcTimeEl.textContent = formatUTC(date);
-    tzTimeEl.textContent  = formatInZone(date, ianaZone, abbr);
+    paused = true;
     unitLabel.textContent = `Assumed: ${unit}`;
-    chrome.storage.local.set({ tzActive: true });
+    renderClock(date);
   }
 });
 
 resetBtn.addEventListener('click', () => {
   paused = false;
-  tzTimeEl.textContent = '';
-  chrome.storage.local.remove('tzActive');
   epochInput.blur();
   updateTime();
+});
+
+// Add the selected zone to the world clock (dedupe by abbreviation).
+addZoneBtn.addEventListener('click', () => {
+  const abbr = tzSelect.selectedOptions[0].text;
+  const iana = tzSelect.value;
+  if (zones.some(z => z.abbr === abbr)) return;
+  zones.push({ abbr, iana });
+  saveZones();
+  renderRows();
+  renderClock(shownDate());
 });
 
 // ── COLOR PICKER ─────────────────────────────────────────────────────────────
@@ -143,7 +197,7 @@ function initColorPicker(saved) {
   grid.appendChild(customCell);
 }
 
-chrome.storage.local.get(['colorPair', 'selectedTz', 'tzActive'], (result) => {
+chrome.storage.local.get(['colorPair', 'worldZones'], (result) => {
   let saved = result.colorPair;
   if (!saved) {
     saved = { bg: FIXED_BG, accent: '#ffab00' };
@@ -151,18 +205,10 @@ chrome.storage.local.get(['colorPair', 'selectedTz', 'tzActive'], (result) => {
   }
   initColorPicker(saved);
 
-  if (result.selectedTz) {
-    const match = [...tzSelect.options].findIndex(o => o.text === result.selectedTz);
-    if (match !== -1) tzSelect.selectedIndex = match;
-  }
-
-  if (result.tzActive) {
-    tzTimeEl.textContent = formatInZone(new Date(), tzSelect.value, tzSelect.selectedOptions[0].text);
-  }
-});
-
-tzSelect.addEventListener('change', () => {
-  chrome.storage.local.set({ selectedTz: tzSelect.selectedOptions[0].text });
+  // Load favorite zones; default to none (UTC-only) until the user adds some.
+  zones = Array.isArray(result.worldZones) ? result.worldZones : [];
+  renderRows();
+  updateTime();
 });
 
 // ── THEME TOGGLE ─────────────────────────────────────────────────────────────
