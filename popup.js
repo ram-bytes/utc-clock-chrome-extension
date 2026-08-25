@@ -115,6 +115,14 @@ convertBtn.addEventListener('click', () => {
   }
 });
 
+epochInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    valueToConvert = epochInput.value;
+    convertBtn.click();
+  }
+});
+
 resetBtn.addEventListener('click', () => {
   paused = false;
   epochInput.blur();
